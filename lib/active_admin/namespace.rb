@@ -239,6 +239,10 @@ module ActiveAdmin
         @namespaces.values.each(&block)
       end
 
+      def find(&block)
+        @namespaces.values.find(&block)
+      end
+
       def names
         @namespaces.keys
       end

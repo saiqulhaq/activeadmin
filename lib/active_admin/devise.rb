@@ -31,9 +31,9 @@ module ActiveAdmin
         helper ::ActiveAdmin::ViewHelpers
       end
 
-      # Redirect to the default namespace on logout
-      def root_path
-        namespace = ActiveAdmin.application.default_namespace.presence
+      # Redirect to approriate namespace on logout
+      def root_path(namespace = nil)
+        namespace ||= ActiveAdmin.application.default_namespace.presence
         root_path_method = [namespace, :root_path].compact.join('_')
 
         path = if Helpers::Routes.respond_to? root_path_method
@@ -52,6 +52,24 @@ module ActiveAdmin
 
     class SessionsController < ::Devise::SessionsController
       include ::ActiveAdmin::Devise::Controller
+
+      def after_sign_out_path_for(resource)
+        # Guess the current namespace
+        current_namespace = ActiveAdmin.application.namespaces.find do |namespace|
+          namespace.authentication_model.to_s == resource.to_s ||
+            namespace.name.to_s.singularize == resource.to_s
+        end.try(:name)
+
+        root_path(current_namespace)
+      end
+
+      def after_sign_in_path_for(resource)
+        case resource.class.name
+        when AdminUser.to_s then admin_dashboard_path
+        when User.to_s then student_root_path
+        else super
+        end
+      end
     end
 
     class PasswordsController < ::Devise::PasswordsController

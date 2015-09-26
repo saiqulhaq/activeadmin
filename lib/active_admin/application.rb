@@ -52,6 +52,8 @@ module ActiveAdmin
     # The view factory to use to generate all the view classes. Take
     # a look at ActiveAdmin::ViewFactory
     inheritable_setting :view_factory, ActiveAdmin::ViewFactory.new
+    # The model class name of authenticated user
+    inheritable_setting :authentication_model, false
 
     # The method to call in controllers to get the current user
     inheritable_setting :current_user_method, false
