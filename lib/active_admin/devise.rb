@@ -82,6 +82,12 @@ module ActiveAdmin
 
     class RegistrationsController < ::Devise::RegistrationsController
        include ::ActiveAdmin::Devise::Controller
+       def after_sign_up_path_for(resource)
+         if resource.is_a?(User)
+           return student_dashboard_path
+         end
+         admin_dashboard_path
+       end
     end
 
     class ConfirmationsController < ::Devise::ConfirmationsController
